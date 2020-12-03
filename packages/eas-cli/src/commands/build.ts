@@ -13,7 +13,6 @@ import { ensureLoggedInAsync } from '../user/actions';
 
 export default class Build extends Command {
   static description = 'Start a build';
-  static aliases = ['build:submit'];
 
   static flags = {
     platform: flags.enum({ char: 'p', options: ['android', 'ios', 'all'], required: true }),
