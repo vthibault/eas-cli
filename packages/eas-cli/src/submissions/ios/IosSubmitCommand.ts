@@ -101,18 +101,18 @@ class IosSubmitCommand {
       };
     }
 
-    const wrap = wordwrap(process.stdout.columns || 80);
-    log(
-      wrap(
-        chalk.italic(
-          'Ensuring your app exists on App Store Connect. ' +
-            `This step can be skipped by providing the --asc-app-id param. ${learnMore(
-              'https://expo.fyi/asc-app-id'
-            )}`
-        )
-      )
-    );
-    log.addNewLineIfNone();
+    // const wrap = wordwrap(process.stdout.columns || 80);
+    // log(
+    //   wrap(
+    //     chalk.italic(
+    //       'Ensuring your app exists on App Store Connect. ' +
+    //         `This step can be skipped by providing the --asc-app-id param. ${learnMore(
+    //           'https://expo.fyi/asc-app-id'
+    //         )}`
+    //     )
+    //   )
+    // );
+    // log.addNewLineIfNone();
     return await ensureAppStoreConnectAppExistsAsync(this.ctx);
   }
 

@@ -24,8 +24,8 @@ export default class DeviceManager {
   constructor(private ctx: DeviceManagerContext) {}
 
   public async createAsync(): Promise<void> {
-    log(chalk.green(CREATE_COMMAND_DESCRIPTION));
-    log.addNewLineIfNone();
+    // log(chalk.green(CREATE_COMMAND_DESCRIPTION));
+    // log.addNewLineIfNone();
 
     const account = await this.resolveAccountAsync();
     const { team } = await this.ctx.appStore.ensureAuthenticatedAsync();

@@ -110,7 +110,7 @@ export class SetupProvisioningProfile implements Action {
       this.app.bundleIdentifier
     );
     if (!validationResult.ok) {
-      log.warn(validationResult.error);
+      // log.warn(validationResult.error);
       return false;
     }
     return true;

@@ -48,8 +48,8 @@ export class UpdateDistributionCertificate implements Action {
       selected.id,
       this.accountName
     );
-    displayIosUserCredentials(newDistCert);
-    log.newLine();
+    // displayIosUserCredentials(newDistCert);
+    // log.newLine();
   }
 }
 

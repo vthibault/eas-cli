@@ -112,28 +112,28 @@ class CredentialsContext implements Context {
       return;
     }
 
-    log(
-      chalk.green(
-        'If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.'
-      )
-    );
-    log(
-      chalk.green(
-        'This is optional, but without Apple account access you will need to provide all the values manually and we can only run minimal validation on them.'
-      )
-    );
-    const confirm = await confirmAsync({
-      message: `Do you want to log in to your Apple account?`,
-    });
-    if (confirm) {
-      await this.appStore.ensureAuthenticatedAsync();
-    } else {
-      log(
-        chalk.green(
-          'No problem! 👌 If you select an action that requires those credentials we will ask you again about it.'
-        )
-      );
-    }
+    // log(
+    //   chalk.green(
+    //     'If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.'
+    //   )
+    // );
+    // log(
+    //   chalk.green(
+    //     'This is optional, but without Apple account access you will need to provide all the values manually and we can only run minimal validation on them.'
+    //   )
+    // );
+    // const confirm = await confirmAsync({
+    //   message: `Do you want to log in to your Apple account?`,
+    // });
+    // if (confirm) {
+    await this.appStore.ensureAuthenticatedAsync();
+    // } else {
+    //   log(
+    //     chalk.green(
+    //       'No problem! 👌 If you select an action that requires those credentials we will ask you again about it.'
+    //     )
+    //   );
+    // }
     this.shouldAskAuthenticateAppStore = false;
   }
 }

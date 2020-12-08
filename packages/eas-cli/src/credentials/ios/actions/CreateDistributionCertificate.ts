@@ -15,9 +15,9 @@ export class CreateDistributionCertificateStandaloneManager implements Action {
     const action = new CreateDistributionCertificate(this.accountName);
     await manager.runActionAsync(action);
 
-    log.newLine();
-    displayIosUserCredentials(action.distCredentials);
-    log.newLine();
+    // log.newLine();
+    // displayIosUserCredentials(action.distCredentials);
+    // log.newLine();
   }
 }
 

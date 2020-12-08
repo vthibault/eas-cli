@@ -28,17 +28,17 @@ export function displayProjectCredentials(
     return;
   }
 
-  log();
-  log(chalk.bold('Project Credentials Configuration:'));
-  displayIosAppCredentials(appCredentials);
-  log();
+  // log();
+  // log(chalk.bold('Project Credentials Configuration:'));
+  // displayIosAppCredentials(appCredentials);
+  // log();
 
   if (distCert) {
-    displayIosUserCredentials(distCert);
+    // displayIosUserCredentials(distCert);
   }
 
   if (pushKey) {
-    displayIosUserCredentials(pushKey);
+    // displayIosUserCredentials(pushKey);
   }
 }
 

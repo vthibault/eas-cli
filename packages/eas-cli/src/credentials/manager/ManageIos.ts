@@ -36,7 +36,7 @@ export class ManageIos implements Action {
     const accountName = (ctx.hasProjectContext ? ctx.exp.owner : undefined) ?? ctx.user.username;
     const iosCredentials = await ctx.ios.getAllCredentialsAsync(accountName);
 
-    await displayAllIosCredentials(iosCredentials);
+    // await displayAllIosCredentials(iosCredentials);
 
     const projectSpecificActions: { value: ActionType; title: string }[] = ctx.hasProjectContext
       ? [
