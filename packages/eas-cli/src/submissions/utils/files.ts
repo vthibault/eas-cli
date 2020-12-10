@@ -54,7 +54,9 @@ async function moveFileOfTypeAsync(
 }
 
 export function createDownloadStream(url: string) {
-  return got.stream(url).on('downloadProgress', createProgressTracker());
+  return got
+    .stream(url)
+    .on('downloadProgress', createProgressTracker({ message: 'Downloading app' }));
 }
 
 export function pathIsTar(path: string): boolean {
@@ -85,7 +87,7 @@ export async function uploadAppArchiveAsync(path: string): Promise<string> {
   return await uploadAsync(
     UploadType.SUBMISSION_APP_ARCHIVE,
     path,
-    createProgressTracker(fileSize)
+    createProgressTracker({ total: fileSize, message: 'Uploading to EAS Submit' })
   );
 }
 

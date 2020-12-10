@@ -1,26 +1,110 @@
+import chalk from 'chalk';
 import { Progress } from 'got';
-import ProgressBar from 'progress';
+import ora from 'ora';
 
-type ProgressTracker = (progress: Progress) => void;
+type ProgressHandler = (props: {
+  progress?: Progress;
+  isComplete?: boolean;
+  error?: Error;
+}) => void;
 
-function createProgressTracker(_total?: number, message: string = ''): ProgressTracker {
-  let bar: ProgressBar | null = null;
+function createProgressTracker({
+  total,
+  message,
+}: {
+  total?: number;
+  message: string;
+}): ProgressHandler {
+  let bar: ora.Ora | null = null;
+  let calcTotal: number = total ?? 0;
   let transferredSoFar = 0;
-  return (progress: Progress) => {
-    if (!bar && (progress.total !== undefined || _total !== undefined)) {
-      const total = (_total ?? progress.total) as number;
-      bar = new ProgressBar(`${message}[:bar] :percent :etas`, {
-        complete: '=',
-        incomplete: ' ',
-        total,
-        width: Math.max(56, 64 - message.length),
-      });
+  let current = 0;
+  let timer: number = 0;
+  const withPercent = (v: number) => {
+    const ratio = Math.min(Math.max(v, 0), 1);
+    const percent = Math.floor(ratio * 100);
+    return `${message} ${percent.toFixed(0)}%`;
+  };
+
+  return ({ progress, isComplete, error }) => {
+    if (progress) {
+      if (!bar && (progress.total !== undefined || total !== undefined)) {
+        calcTotal = (total ?? progress.total) as number;
+        bar = ora(withPercent(0)).start();
+        timer = Date.now();
+      }
+      if (progress.total) {
+        calcTotal = progress.total;
+      }
+      if (bar) {
+        let percentage = 0;
+        if (progress.percent) {
+          percentage = progress.percent;
+        } else {
+          current += progress.transferred - transferredSoFar;
+          percentage = current / calcTotal;
+        }
+
+        bar.text = withPercent(percentage);
+      }
+      transferredSoFar = progress.transferred;
     }
-    if (bar) {
-      bar.tick(progress.transferred - transferredSoFar);
+
+    if (!bar) return;
+
+    if (error) {
+      bar.fail(`Uploading project to EAS failed`);
+    } else if (isComplete) {
+      const duration = timer ? Date.now() - timer : 0;
+      const prettyTime = timeConversion(duration);
+      bar.succeed(`Uploaded to EAS ${chalk.dim(prettyTime)}`);
     }
-    transferredSoFar = progress.transferred;
   };
 }
+
+function timeConversion(duration: number) {
+  const portions: string[] = [];
+
+  const msInHour = 1000 * 60 * 60;
+  const hours = Math.trunc(duration / msInHour);
+  if (hours > 0) {
+    portions.push(hours + 'h');
+    duration = duration - hours * msInHour;
+  }
+
+  const msInMinute = 1000 * 60;
+  const minutes = Math.trunc(duration / msInMinute);
+  if (minutes > 0) {
+    portions.push(minutes + 'm');
+    duration = duration - minutes * msInMinute;
+  }
+
+  const seconds = Math.trunc(duration / 1000);
+  if (seconds > 0) {
+    portions.push(seconds + 's');
+  }
+
+  return portions.join(' ');
+}
+
+// function timeConversion(millisec: number): string {
+//   const seconds = round(millisec / 1000, 1);
+//   if (seconds < 60) {
+//     return seconds + 's';
+//   }
+
+//   const minutes = round(millisec / (1000 * 60), 1);
+//   if (minutes < 60) {
+//     return minutes + 'm';
+//   }
+
+//   const hours = round(millisec / (1000 * 60 * 60), 1);
+//   return hours + 'h';
+// }
+
+// function round(value: number, precision: number) {
+//   var multiplier = Math.pow(10, precision || 0);
+//   return Math.round(value * multiplier) / multiplier;
+// }
 
 export { createProgressTracker };

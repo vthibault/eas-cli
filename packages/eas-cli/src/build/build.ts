@@ -131,7 +131,7 @@ async function uploadProjectAsync<TPlatform extends Platform>(
         return await uploadAsync(
           UploadType.TURTLE_PROJECT_SOURCES,
           projectTarball.path,
-          createProgressTracker(projectTarball.size, 'Uploading ')
+          createProgressTracker({ total: projectTarball.size, message: 'Uploading to EAS Build' })
         );
       },
       {

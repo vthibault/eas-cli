@@ -11,12 +11,16 @@ export enum UploadType {
   SUBMISSION_APP_ARCHIVE = 'submission-app-archive',
 }
 
-type ProgressHandler = (progress: Progress) => void;
+type ProgressHandler = (props: {
+  progress?: Progress;
+  isComplete?: boolean;
+  error?: Error;
+}) => void;
 
 export async function uploadAsync(
   uploadType: UploadType,
   path: string,
-  handleProgressEvent?: ProgressHandler
+  handleProgressEvent: ProgressHandler
 ): Promise<string> {
   const presignedPost = await obtainS3PresignedPostAsync(uploadType, path);
   return await uploadWithPresignedPostAsync(
@@ -50,7 +54,7 @@ async function obtainS3PresignedPostAsync(
 async function uploadWithPresignedPostAsync(
   stream: Readable,
   presignedPost: S3PresignedPost,
-  handleProgressEvent?: ProgressHandler
+  handleProgressEvent: ProgressHandler
 ) {
   const form = new FormData();
   for (const [fieldKey, fieldValue] of Object.entries(presignedPost.fields)) {
@@ -60,8 +64,16 @@ async function uploadWithPresignedPostAsync(
   const formHeaders = form.getHeaders();
   let uploadPromise = got.post(presignedPost.url, { body: form, headers: { ...formHeaders } });
   if (handleProgressEvent) {
-    uploadPromise = uploadPromise.on('uploadProgress', handleProgressEvent);
+    uploadPromise = uploadPromise.on('uploadProgress', progress =>
+      handleProgressEvent({ progress })
+    );
   }
-  const response = await uploadPromise;
-  return String(response.headers.location);
+  try {
+    const response = await uploadPromise;
+    handleProgressEvent({ isComplete: true });
+    return String(response.headers.location);
+  } catch (error) {
+    handleProgressEvent({ isComplete: true, error });
+    throw error;
+  }
 }
