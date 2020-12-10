@@ -28,6 +28,7 @@ export interface Build {
   status: BuildStatus;
   platform: Platform;
   createdAt: string;
+  updatedAt: string;
   artifacts?: BuildArtifacts;
   metadata?: Partial<BuildMetadata>;
 }
@@ -84,6 +85,18 @@ export type BuildMetadata = {
    * Indicates whether this is a build for store or internal distribution.
    */
   distribution: DistributionType;
+
+  /**
+   * App name (expo.name in app.json/app.config.js)
+   */
+  appName?: string;
+
+  /**
+   * App identifier:
+   * - iOS builds: the bundle identifier (expo.ios.bundleIdentifier in app.json/app.config.js)
+   * - Android builds: the application id (expo.android.package in app.json/app.config.js)
+   */
+  appIdentifier?: string;
 };
 
 export type PlatformBuildProfile<T extends Platform> = T extends Platform.Android
