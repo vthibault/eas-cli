@@ -17,6 +17,7 @@ export async function buildAsync(commandCtx: CommandContext): Promise<void> {
   await ensureGitStatusIsCleanAsync(commandCtx.nonInteractive);
 
   const scheduledBuilds = await startBuildsAsync(commandCtx);
+  process.exit(0);
   log.newLine();
   printLogsUrls(commandCtx.accountName, scheduledBuilds);
   log.newLine();

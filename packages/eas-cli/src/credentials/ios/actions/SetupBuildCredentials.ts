@@ -63,9 +63,9 @@ export class SetupBuildCredentials implements Action {
     );
     const appInfo = `@${this.app.accountName}/${this.app.projectName} (${this.app.bundleIdentifier})`;
     displayProjectCredentials(this.app, appCredentials, /* pushKey */ null, distCert);
-    log.newLine();
-    log(chalk.green(`All credentials are ready to build ${appInfo}`));
-    log.newLine();
+    // log.newLine();
+    // log(chalk.green(`All credentials are ready to build ${appInfo}`));
+    // log.newLine();
   }
 
   async unifyCredentialsFormatAsync(
@@ -191,8 +191,8 @@ export class SetupBuildCredentialsFromCredentialsJson implements Action {
       undefined,
       await ctx.ios.getDistributionCertificateAsync(this.app)
     );
-    log.newLine();
-    log(chalk.green(`All credentials are ready to build ${appInfo}`));
-    log.newLine();
+    // log.newLine();
+    // log(chalk.green(`All credentials are ready to build ${appInfo}`));
+    // log.newLine();
   }
 }

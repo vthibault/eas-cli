@@ -128,11 +128,10 @@ async function uploadProjectAsync<TPlatform extends Platform>(
         const projectTarball = await makeProjectTarballAsync();
         projectTarballPath = projectTarball.path;
 
-        log('Uploading project to build servers');
         return await uploadAsync(
           UploadType.TURTLE_PROJECT_SOURCES,
           projectTarball.path,
-          createProgressTracker(projectTarball.size)
+          createProgressTracker(projectTarball.size, 'Uploading ')
         );
       },
       {

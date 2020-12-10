@@ -42,19 +42,19 @@ export class SetupDistributionCertificateForApp implements Action {
     const usedByApps = credentials.appCredentials.filter(
       cred => cred.distCredentialsId === autoselectedCertificate.id
     );
-    const confirm = await confirmAsync({
-      message: `${formatDistributionCertificate(
-        autoselectedCertificate,
-        usedByApps,
-        ctx.appStore.authCtx ? 'VALID' : 'UNKNOWN'
-      )} \n  Would you like to use this certificate?`,
-    });
-    if (!confirm) {
-      await this.createOrReuseAsync(manager, ctx);
-      return;
-    }
+    // const confirm = await confirmAsync({
+    //   message: `${formatDistributionCertificate(
+    //     autoselectedCertificate,
+    //     usedByApps,
+    //     ctx.appStore.authCtx ? 'VALID' : 'UNKNOWN'
+    //   )} \n  Would you like to use this certificate?`,
+    // });
+    // if (!confirm) {
+    //   await this.createOrReuseAsync(manager, ctx);
+    //   return;
+    // }
 
-    log(`Using Distribution Certificate: ${autoselectedCertificate.certId || '-----'}`);
+    // log(`Using Distribution Certificate: ${autoselectedCertificate.certId || '-----'}`);
     await manager.runActionAsync(
       new UseSpecificDistributionCertificate(this.app, autoselectedCertificate.id)
     );

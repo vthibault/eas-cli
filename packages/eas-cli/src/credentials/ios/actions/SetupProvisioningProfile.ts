@@ -54,19 +54,19 @@ export class SetupProvisioningProfile implements Action {
     const autoselectedProfile = this.choosePreferred(existingProfiles, distCert);
     // autoselect credentials if we find valid certs
 
-    if (!ctx.nonInteractive) {
-      const confirm = await confirmAsync({
-        message: `${formatProvisioningProfileFromApple(
-          autoselectedProfile
-        )} \n  Would you like to use this profile?`,
-      });
-      if (!confirm) {
-        await this.createOrReuseAsync(manager, ctx);
-        return;
-      }
-    } else {
-      log(`Using provisioning profile: ${autoselectedProfile.provisioningProfileId}`);
-    }
+    // if (!ctx.nonInteractive) {
+    //   const confirm = await confirmAsync({
+    //     message: `${formatProvisioningProfileFromApple(
+    //       autoselectedProfile
+    //     )} \n  Would you like to use this profile?`,
+    //   });
+    //   if (!confirm) {
+    //     await this.createOrReuseAsync(manager, ctx);
+    //     return;
+    //   }
+    // } else {
+    //   log(`Using provisioning profile: ${autoselectedProfile.provisioningProfileId}`);
+    // }
 
     await ctx.ios.updateProvisioningProfileAsync(
       this.app,

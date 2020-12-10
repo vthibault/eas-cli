@@ -4,7 +4,7 @@ import path from 'path';
 import untildify from 'untildify';
 
 import log from '../../log';
-import { Question as PromptQuestion, promptAsync } from '../../prompts';
+import { Question as PromptQuestion, promptAsync, confirmAsync } from '../../prompts';
 
 export type Question = {
   field: string;
@@ -63,20 +63,9 @@ export async function getCredentialsFromUserAsync<T>(
 }
 
 async function willUserProvideCredentialsAsync<T>(schema: CredentialSchema<T>) {
-  const { answer } = await promptAsync({
-    type: 'select',
-    name: 'answer',
+  const answer = await confirmAsync({
     message: schema?.provideMethodQuestion?.question ?? `Will you provide your own ${schema.name}?`,
-    choices: [
-      {
-        title: schema?.provideMethodQuestion?.expoGenerated ?? 'Let EAS handle the process',
-        value: false,
-      },
-      {
-        title: schema?.provideMethodQuestion?.userProvided ?? 'I want to upload my own file',
-        value: true,
-      },
-    ],
+    initial: false,
   });
   return answer;
 }

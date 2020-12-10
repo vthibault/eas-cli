@@ -136,7 +136,7 @@ export async function listProvisioningProfilesAsync(
   bundleIdentifier: string,
   profileClass: ProfileClass = ProfileClass.General
 ): Promise<ProvisioningProfileStoreInfo[]> {
-  const spinner = ora(`Fetching Apple provisioning profiles`).start();
+  // const spinner = ora(`Fetching Apple provisioning profiles`).start();
   try {
     const context = getRequestContext(authCtx);
     const profileType = resolveProfileType(profileClass, authCtx.team.inHouse);
@@ -148,10 +148,10 @@ export async function listProvisioningProfilesAsync(
       profiles.map(profile => transformProfileAsync(profile, authCtx))
     );
 
-    spinner.succeed(`Fetched Apple provisioning profiles`);
+    // spinner.stop();
     return result;
   } catch (error) {
-    spinner.fail(`Failed to fetch Apple provisioning profiles`);
+    // spinner.fail(`Failed to fetch Apple provisioning profiles`);
     throw error;
   }
 }

@@ -57,7 +57,7 @@ export function transformCertificate(cert: Certificate): DistributionCertificate
 export async function listDistributionCertificatesAsync(
   authCtx: AuthCtx
 ): Promise<DistributionCertificateStoreInfo[]> {
-  const spinner = ora(`Fetching Apple distribution certificates`).start();
+  // const spinner = ora(`Fetching Apple distribution certificates`).start();
   try {
     const context = getRequestContext(authCtx);
     const certs = (
@@ -73,10 +73,10 @@ export async function listDistributionCertificatesAsync(
         },
       })
     ).map(transformCertificate);
-    spinner.succeed(`Fetched Apple distribution certificates`);
+    // spinner.succeed(`Fetched Apple distribution certificates`);
     return certs;
   } catch (error) {
-    spinner.fail(`Failed to fetch Apple distribution certificates`);
+    // spinner.fail(`Failed to fetch Apple distribution certificates`);
     throw error;
   }
 }

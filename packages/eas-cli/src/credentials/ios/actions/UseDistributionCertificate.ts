@@ -29,10 +29,10 @@ export class UseSpecificDistributionCertificate implements Action {
 
   public async runAsync(manager: CredentialsManager, ctx: Context): Promise<void> {
     await ctx.ios.useDistributionCertificateAsync(this.app, this.userCredentialsId);
-    log(
-      chalk.green(
-        `Successfully assigned Distribution Certificate to @${this.app.accountName}/${this.app.projectName} (${this.app.bundleIdentifier})`
-      )
-    );
+    // log(
+    //   chalk.green(
+    //     `Successfully assigned Distribution Certificate to @${this.app.accountName}/${this.app.projectName} (${this.app.bundleIdentifier})`
+    //   )
+    // );
   }
 }

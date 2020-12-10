@@ -42,6 +42,6 @@ export class SetupBuildCredentialsFromCredentialsJson implements Action {
       await validateKeystoreAsync(localCredentials.keystore);
     }
     await ctx.android.updateKeystoreAsync(this.projectFullName, localCredentials.keystore);
-    log(chalk.green('Keystore updated successfully.'));
+    // log(chalk.green('Keystore updated successfully.'));
   }
 }
