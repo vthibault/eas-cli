@@ -34,7 +34,7 @@ export class RemoveSpecificProvisioningProfile implements Action {
     await ctx.ios.deleteProvisioningProfileAsync(this.app);
     log(
       chalk.green(
-        `Successfully removed Provisioning Profile for @${this.app.accountName}/${this.app.projectName} (${this.app.bundleIdentifier})`
+        `Removed Provisioning Profile for @${this.app.accountName}/${this.app.projectName} (${this.app.bundleIdentifier})`
       )
     );
 

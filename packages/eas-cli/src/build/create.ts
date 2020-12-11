@@ -8,6 +8,7 @@ import log from '../log';
 import { sleep } from '../utils/promise';
 import { endTimer, formatMilliseconds, hasTimer, startTimer } from '../utils/timer';
 import { prepareAndroidBuildAsync } from './android/build';
+import { platformDisplayNames } from './constants';
 import { CommandContext } from './context';
 import { prepareIosBuildAsync } from './ios/build';
 import { Build, BuildStatus, Platform, RequestedPlatform } from './types';
@@ -33,12 +34,12 @@ export async function buildAsync(commandCtx: CommandContext): Promise<void> {
   log.newLine();
 
   if (commandCtx.waitForBuildEnd) {
-    const builds = await waitForBuildEndAsync(
+    await waitForBuildEndAsync(
       commandCtx,
       scheduledBuilds.map(i => i.buildId)
     );
-    log.newLine();
-    printBuildResults(commandCtx.accountName, builds);
+    // log.newLine();
+    // printBuildResults(commandCtx.accountName, builds);
   }
 }
 
@@ -82,6 +83,15 @@ async function startBuildsAsync(
 }
 
 const mockBuilds: Record<string, any> = {
+  '5ef5e676-b127-4b9e-bf7b-37827721e039': {
+    id: '5ef5e676-b127-4b9e-bf7b-37827721e039',
+    platform: 'android',
+    status: BuildStatus.IN_PROGRESS,
+    artifacts: {
+      buildUrl:
+        'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
+    },
+  },
   'aff486c1-cb2f-49c4-86dd-649d0f68578a': {
     id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
     platform: 'ios',
@@ -97,15 +107,7 @@ const mockBuilds: Record<string, any> = {
   //   platform: 'web',
   //   status: BuildStatus.ERRORED,
   // },
-  '5ef5e676-b127-4b9e-bf7b-37827721e039': {
-    id: '5ef5e676-b127-4b9e-bf7b-37827721e039',
-    platform: 'android',
-    status: BuildStatus.IN_PROGRESS,
-    artifacts: {
-      buildUrl:
-        'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
-    },
-  },
+
   // '5ef5e676-b127-4b9e-bf7b-37827721e040': '5ef5e676-b127-4b9e-bf7b-37827721e040',
 };
 
@@ -120,11 +122,6 @@ function getMockBuilds(ids: string[]): (Build | string)[] {
   if (i > 1) {
     return [
       {
-        id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
-        platform: 'ios',
-        status: BuildStatus.ERRORED,
-      },
-      {
         id: '5ef5e676-b127-4b9e-bf7b-37827721e039',
         platform: 'android',
         status: BuildStatus.FINISHED,
@@ -133,6 +130,24 @@ function getMockBuilds(ids: string[]): (Build | string)[] {
             'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
         },
       },
+      {
+        id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
+        platform: 'ios',
+        artifacts: {
+          buildUrl:
+            'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
+        },
+        status: BuildStatus.FINISHED,
+      },
+      // {
+      //   id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
+      //   platform: 'web',
+      //   artifacts: {
+      //     buildUrl:
+      //       'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
+      //   },
+      //   status: BuildStatus.IN_QUEUE,
+      // },
     ] as any;
   }
 
@@ -186,11 +201,6 @@ async function waitForBuildEndAsync(
       })
     );
 
-    const platformMap = {
-      ios: 'iOS',
-      android: 'Android',
-    };
-
     for (const build of builds) {
       let id = '';
       if (typeof build === 'string') {
@@ -218,7 +228,7 @@ async function waitForBuildEndAsync(
         });
       } else {
         const prefixed = (msg: string) => {
-          return tableFormat(platformMap[build.platform] ?? build.platform, msg);
+          return tableFormat(platformDisplayNames[build.platform] ?? build.platform, msg);
         };
         switch (build.status) {
           case BuildStatus.IN_QUEUE:
@@ -235,17 +245,18 @@ async function waitForBuildEndAsync(
             break;
           case BuildStatus.ERRORED:
             {
-              const duration = formatMilliseconds(endTimer(id) ?? 0);
-              spinnies.fail(id, { text: prefixed(`Build failed after ${duration}`) });
+              const duration = formatMilliseconds(endTimer(id, false) ?? 0);
+              const durationLabel = duration ? ` in ${duration}` : '';
+              spinnies.fail(id, { text: prefixed(`(Failed${durationLabel})`) });
             }
             break;
           case BuildStatus.FINISHED:
             {
-              const duration = formatMilliseconds(endTimer(id) ?? 0);
-
-              const url = build.artifacts?.buildUrl ?? '';
+              const duration = formatMilliseconds(endTimer(id, false) ?? 0);
+              const durationLabel = duration ? ` in ${duration}` : '';
+              const url = build.artifacts?.buildUrl;
               spinnies.succeed(id, {
-                text: prefixed(`Ready for Download (${duration}): ${chalk.underline(url)}`),
+                text: prefixed(`(Succeeded${durationLabel})\n${url}\n`),
               });
             }
             break;
@@ -265,7 +276,11 @@ async function waitForBuildEndAsync(
     }
 
     time = new Date().getTime();
-    await sleep(intervalSec * 100);
+    if (testLogging) {
+      await sleep(intervalSec * 100);
+    } else {
+      await sleep(intervalSec * 1000);
+    }
   }
 
   spinnies.stopAll('stopped');

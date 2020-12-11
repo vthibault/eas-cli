@@ -1,5 +1,4 @@
 import { DistributionType } from '@expo/eas-json';
-import assert from 'assert';
 import chalk from 'chalk';
 
 import log from '../../log';
@@ -16,34 +15,19 @@ export function printLogsUrls(
   accountName: string,
   builds: { platform: 'android' | 'ios'; buildId: string }[]
 ): void {
-  if (builds.length === 1) {
-    const { buildId } = builds[0];
+  builds.forEach(({ buildId, platform }) => {
     const logsUrl = getBuildLogsUrl({
       buildId,
       account: accountName,
     });
-    log(`Build details: ${chalk.underline(logsUrl)}`);
-  } else {
-    builds.forEach(({ buildId, platform }) => {
-      const logsUrl = getBuildLogsUrl({
-        buildId,
-        account: accountName,
-      });
-      log(`${platformDisplayNames[platform]} build details: ${chalk.underline(logsUrl)}`);
-    });
-  }
+    log(`${platformDisplayNames[platform]} build details:\n${chalk.underline(logsUrl)}`);
+  });
 }
 
 export function printBuildResults(accountName: string, builds: (Build | null)[]): void {
-  if (builds.length === 1) {
-    const [build] = builds;
-    assert(build, 'Build should be defined');
-    printBuildResult(accountName, build);
-  } else {
-    (builds.filter(i => i) as Build[])
-      .filter(build => build.status === 'finished')
-      .forEach(build => printBuildResult(accountName, build));
-  }
+  (builds.filter(i => i) as Build[])
+    .filter(build => build.status === 'finished')
+    .forEach(build => printBuildResult(accountName, build));
 }
 
 function printBuildResult(accountName: string, build: Build): void {
@@ -60,12 +44,12 @@ function printBuildResult(accountName: string, build: Build): void {
     log(`${chalk.underline(logsUrl)}`);
     log.newLine();
   } else {
-    // TODO: it looks like buildUrl could possibly be undefined, based on the code below.
-    // we should account for this case better if it is possible
-    const url = build.artifacts?.buildUrl ?? '';
-    log(`${platformEmojis[build.platform]} ${platformDisplayNames[build.platform]} app:`);
-    log(`${chalk.underline(url)}`);
-    log.newLine();
+    // // TODO: it looks like buildUrl could possibly be undefined, based on the code below.
+    // // we should account for this case better if it is possible
+    // const url = build.artifacts?.buildUrl ?? '';
+    // log(`${platformEmojis[build.platform]} ${platformDisplayNames[build.platform]} app:`);
+    // log(`${chalk.underline(url)}`);
+    // log.newLine();
   }
 }
 

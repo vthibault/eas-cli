@@ -9,7 +9,7 @@ import { confirmAsync, promptAsync } from '../prompts';
 import { platformDisplayNames } from './constants';
 
 function logCredentials(target: 'local' | 'remote', platform: Platform) {
-  let message = `Using ${target} ${platform === 'ios' ? 'iOS' : 'Android'} credentials`;
+  let message = `Using ${target} ${platformDisplayNames[platform]} credentials`;
   if (target === 'local') message += ` ${chalk.dim('(credentials.json)')}`;
   if (target === 'remote') message += ` ${chalk.dim('(Expo server)')}`;
   ora(message).succeed();

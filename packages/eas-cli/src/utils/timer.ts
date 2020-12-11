@@ -9,12 +9,12 @@ export function startTimer(label = LABEL) {
   startTimes[label] = Date.now();
 }
 
-export function endTimer(label = LABEL) {
+export function endTimer(label = LABEL, clear: boolean = true) {
   const endTime = Date.now();
   const startTime = startTimes[label];
   if (startTime) {
     const delta = endTime - startTime;
-    delete startTimes[label];
+    if (clear) delete startTimes[label];
     return delta;
   }
   throw new Error(`Timer '${label}' has not be started yet`);
