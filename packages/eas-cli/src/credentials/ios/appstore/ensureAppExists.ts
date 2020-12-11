@@ -1,4 +1,5 @@
 import { BundleId, CapabilityType, CapabilityTypeOption } from '@expo/apple-utils';
+import chalk from 'chalk';
 import ora from 'ora';
 
 import { AuthCtx, getRequestContext } from './authenticate';
@@ -19,7 +20,7 @@ export async function ensureAppExistsAsync(
   options: EnsureAppExistsOptions = {}
 ) {
   const context = getRequestContext(authCtx);
-  let spinner = ora(`Checking bundle identifier "${bundleIdentifier}"`).start();
+  let spinner = ora(`Linking bundle identifier ${chalk.dim(bundleIdentifier)}`).start();
 
   let bundleId: BundleId | null;
   try {
@@ -27,21 +28,23 @@ export async function ensureAppExistsAsync(
     bundleId = await BundleId.findAsync(context, { identifier: bundleIdentifier });
 
     if (!bundleId) {
-      spinner.text = `Registering bundle identifier "${bundleIdentifier}"`;
+      spinner.text = `Registering bundle identifier ${chalk.dim(bundleIdentifier)}`;
       // If it doesn't exist, create it
       bundleId = await BundleId.createAsync(context, {
         name: `@${accountName}/${projectName}`,
         identifier: bundleIdentifier,
       });
     }
-    spinner.succeed(`Bundle identifier "${bundleIdentifier}" registered`);
+    spinner.succeed(`Bundle identifier registered ${chalk.dim(bundleIdentifier)}`);
   } catch (err) {
     if (err.message.match(/An App ID with Identifier '(.*)' is not available/)) {
       spinner.fail(
-        `The bundle identifier "${bundleIdentifier}" is not available to team "${authCtx.team.name}" (${authCtx.team.id}), please change it in your app config and try again.`
+        `The bundle identifier ${chalk.bold(bundleIdentifier)} is not available to team "${
+          authCtx.team.name
+        }" (${authCtx.team.id}), please change it in your app config and try again.`
       );
     } else {
-      spinner.fail('Failed to register bundle identifier');
+      spinner.fail(`Failed to register bundle identifier ${chalk.dim(bundleIdentifier)}`);
     }
     throw err;
   }
