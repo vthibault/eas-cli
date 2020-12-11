@@ -1,6 +1,10 @@
 const LABEL = 'DEFAULT';
 const startTimes: Record<string, number> = {};
 
+export function hasTimer(label: string): number | null {
+  return startTimes[label] ?? null;
+}
+
 export function startTimer(label = LABEL) {
   startTimes[label] = Date.now();
 }
