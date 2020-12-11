@@ -245,14 +245,20 @@ async function waitForBuildEndAsync(
             break;
           case BuildStatus.ERRORED:
             {
-              const duration = formatMilliseconds(endTimer(id, false) ?? 0);
+              if (!(id in timerCache)) {
+                timerCache[id] = endTimer(id);
+              }
+              const duration = formatMilliseconds(timerCache[id] ?? 0);
               const durationLabel = duration ? ` in ${duration}` : '';
               spinnies.fail(id, { text: prefixed(`(Failed${durationLabel})`) });
             }
             break;
           case BuildStatus.FINISHED:
             {
-              const duration = formatMilliseconds(endTimer(id, false) ?? 0);
+              if (!(id in timerCache)) {
+                timerCache[id] = endTimer(id);
+              }
+              const duration = formatMilliseconds(timerCache[id] ?? 0);
               const durationLabel = duration ? ` in ${duration}` : '';
               const url = build.artifacts?.buildUrl;
               spinnies.succeed(id, {
@@ -289,3 +295,5 @@ async function waitForBuildEndAsync(
     'Timeout reached! It is taking longer than expected to finish the build, aborting...'
   );
 }
+
+const timerCache: Record<string, number> = {};
