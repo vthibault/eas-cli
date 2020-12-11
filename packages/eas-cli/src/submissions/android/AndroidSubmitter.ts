@@ -68,15 +68,11 @@ class AndroidSubmitter extends BaseSubmitter<AndroidSubmissionContext, AndroidSu
       projectId,
     };
 
-    printSummary(
-      {
-        ...submissionConfig,
-        serviceAccountPath,
-      },
-      'Android Submission Summary',
-      SummaryHumanReadableKeys,
-      SummaryHumanReadableValues
-    );
+    printSummaryAndroid({
+      ...submissionConfig,
+      serviceAccountPath,
+    });
+
     return { ...submissionConfig, serviceAccount };
   }
 }
@@ -92,10 +88,30 @@ interface Summary {
   projectId?: string;
 }
 
+/**
+ * Log the summary as a table. Exported for testing locally.
+ *
+ * @example
+ * printSummaryAndroid({
+ *   androidPackage: 'com.expo.demoapp',
+ *   archivePath: '/Users/example/Documents/863f9337-65d2-40c6-acb3-c1054c5c09f8.apk',
+ *   archiveUrl: 'https://turtle-v2-artifacts.s3.amazonaws.com/ios/6420592d-5b5d-439b-aed4-ccd278647138-ca4145d8468947df9ded737248a1a238.aab',
+ *   archiveType: 'apk' as any,
+ *   serviceAccountPath: '/Users/example/Documents/gsa.json',
+ *   track: ReleaseTrack.production,
+ *   releaseStatus: ReleaseStatus.completed,
+ *   projectId: '863f9337-65d2-40c6-acb3-c1054c5c09f8',
+ * });
+ * @param submissionConfig
+ */
+export function printSummaryAndroid(submissionConfig: Summary) {
+  printSummary(submissionConfig, SummaryHumanReadableKeys, SummaryHumanReadableValues);
+}
+
 const SummaryHumanReadableKeys: Record<keyof Summary, string> = {
   androidPackage: 'Android package',
   archivePath: 'Archive path',
-  archiveUrl: 'Archive URL',
+  archiveUrl: 'Download URL',
   archiveType: 'Archive type',
   serviceAccountPath: 'Google Service Account',
   track: 'Release track',
@@ -104,8 +120,8 @@ const SummaryHumanReadableKeys: Record<keyof Summary, string> = {
 };
 
 const SummaryHumanReadableValues: Partial<Record<keyof Summary, Function>> = {
-  archivePath: (path: string) => breakWord(path, 50),
-  archiveUrl: (url: string) => breakWord(url, 50),
+  // archivePath: (path: string) => breakWord(path, 50),
+  // archiveUrl: (url: string) => breakWord(url, 50),
 };
 
 export default AndroidSubmitter;
