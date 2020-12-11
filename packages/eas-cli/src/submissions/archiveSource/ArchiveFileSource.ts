@@ -159,19 +159,19 @@ async function handlePromptSourceAsync(source: ArchiveFilePromptSource): Promise
     type: 'select',
     message: 'What would you like to submit?',
     choices: [
-      { title: 'I have a url to the app archive', value: ArchiveFileSourceType.url },
       {
-        title: "I'd like to upload the app archive from my computer",
-        value: ArchiveFileSourceType.path,
-      },
-      {
-        title: 'The latest build from Expo servers',
+        title: `Latest build from EAS`,
         value: ArchiveFileSourceType.latest,
       },
+      // { title: 'I have a url to the app archive', value: ArchiveFileSourceType.url },
       {
-        title: 'A build identified by a build id',
-        value: ArchiveFileSourceType.buildId,
+        title: 'Local app binary file',
+        value: ArchiveFileSourceType.path,
       },
+      // {
+      //   title: 'A build identified by a build id',
+      //   value: ArchiveFileSourceType.buildId,
+      // },
     ],
   });
   const sourceType = sourceTypeRaw as ArchiveFileSourceType;
