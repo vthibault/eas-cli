@@ -12,16 +12,19 @@ import { Build, BuildStatus, Platform, RequestedPlatform } from './types';
 import { printBuildResults, printLogsUrls } from './utils/printBuildInfo';
 import { ensureGitRepoExistsAsync, ensureGitStatusIsCleanAsync } from './utils/repository';
 
+const useMockBuilds = true;
+
 export async function buildAsync(commandCtx: CommandContext): Promise<void> {
   await ensureGitRepoExistsAsync();
   await ensureGitStatusIsCleanAsync(commandCtx.nonInteractive);
 
   const scheduledBuilds = await startBuildsAsync(commandCtx);
-  process.exit(0);
+
   log.newLine();
   printLogsUrls(commandCtx.accountName, scheduledBuilds);
   log.newLine();
 
+  process.exit(0);
   if (commandCtx.waitForBuildEnd) {
     const builds = await waitForBuildEndAsync(
       commandCtx,
@@ -58,6 +61,20 @@ async function startBuildsAsync(
     const sendBuildRequestAsync = await prepareIosBuildAsync(commandCtx, easConfig);
     builds.push({ platform: Platform.iOS, sendBuildRequestAsync });
   }
+
+  if (useMockBuilds) {
+    return [
+      shouldBuildAndroid && {
+        platform: Platform.Android,
+        buildId: 'XXX5e676-b127-4b9e-bf7b-37827721e039',
+      },
+      shouldBuildiOS && {
+        platform: Platform.iOS,
+        buildId: 'XXX5e676-b127-4b9e-bf7b-37827721e038',
+      },
+    ].filter(Boolean) as any;
+  }
+
   return Promise.all(
     builds.map(async ({ platform, sendBuildRequestAsync }) => ({
       platform,
