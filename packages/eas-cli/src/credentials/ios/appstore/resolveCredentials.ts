@@ -44,7 +44,7 @@ function getAppleIdFromEnvironmentOrOptions({
 }
 
 async function promptUsernameAsync(): Promise<string> {
-  log('\u24D8 Log in to your Apple Developer account to continue');
+  log('\u203A Log in to your Apple Developer account to continue');
 
   // Get the email address that was last used and set it as
   // the default value for quicker authentication.

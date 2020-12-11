@@ -1,15 +1,12 @@
 import { Platform, Workflow } from '@expo/eas-build-job';
 import { CredentialsSource } from '@expo/eas-json';
 import chalk from 'chalk';
+import ora from 'ora';
 
 import { CredentialsProvider } from '../credentials/CredentialsProvider';
 import log from '../log';
 import { confirmAsync, promptAsync } from '../prompts';
 import { platformDisplayNames } from './constants';
-import ora from 'ora';
-
-// const USING_CREDENTIALS_JSON_MSG = 'Using credentials from the local credentials.json file';
-// const USING_REMOTE_CREDENTIALS_MSG = 'Using credentials stored on the Expo servers';
 
 function logCredentials(target: 'local' | 'remote', platform: Platform) {
   let message = `Using ${target} ${platform === 'ios' ? 'iOS' : 'Android'} credentials`;
@@ -60,11 +57,9 @@ async function ensureCredentialsAutoAsync(
           return CredentialsSource.LOCAL;
         }
       } else if (hasLocal) {
-        // log(chalk.bold(USING_CREDENTIALS_JSON_MSG));
         logCredentials('local', provider.platform);
         return CredentialsSource.LOCAL;
       } else if (hasRemote) {
-        // log(chalk.bold(USING_REMOTE_CREDENTIALS_MSG));
         logCredentials('remote', provider.platform);
         return CredentialsSource.REMOTE;
       } else {
@@ -95,11 +90,9 @@ export async function ensureCredentialsAsync(
 ): Promise<CredentialsSource.LOCAL | CredentialsSource.REMOTE> {
   switch (src) {
     case CredentialsSource.LOCAL:
-      // log(chalk.bold(USING_CREDENTIALS_JSON_MSG));
       logCredentials('local', provider.platform);
       return CredentialsSource.LOCAL;
     case CredentialsSource.REMOTE:
-      // log(chalk.bold(USING_REMOTE_CREDENTIALS_MSG));
       logCredentials('remote', provider.platform);
       return CredentialsSource.REMOTE;
     case CredentialsSource.AUTO:
