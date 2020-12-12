@@ -19,7 +19,7 @@ export function printSummary<T>(
   const tableFormat = (name: string, msg: string) =>
     `${chalk.bold.cyan(pad(`${name}:`, padWidth + 1))} ${msg}`;
 
-  log.addNewLineIfNone();
+  log.newLine();
   for (const [key, value] of Object.entries(summary)) {
     const displayKey = keyMap[key as keyof T];
     const displayValue = valueRemap[key as keyof T]?.(value) ?? value;

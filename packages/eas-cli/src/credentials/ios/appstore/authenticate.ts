@@ -144,6 +144,7 @@ async function loginWithUserCredentialsAsync({
 }
 
 export async function authenticateAsync(options: Options = {}): Promise<AuthCtx> {
+  log.addNewLineIfNone();
   try {
     const authState = await loginAsync(
       {

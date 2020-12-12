@@ -95,7 +95,7 @@ const mockBuilds: Record<string, any> = {
   'aff486c1-cb2f-49c4-86dd-649d0f68578a': {
     id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
     platform: 'ios',
-    status: BuildStatus.IN_QUEUE,
+    status: BuildStatus.FINISHED,
   },
   // 'bff486c1-cb2f-49c4-86dd-649d0f68578a': {
   //   id: 'bff486c1-cb2f-49c4-86dd-649d0f68578a',
@@ -227,6 +227,14 @@ async function waitForBuildEndAsync(
           spinnerColor: 'gray',
         });
       } else {
+        // Prevent printing a finished state more than once.
+        // Without this, if the last item finished first,
+        // then when all items finish, the last item will be printed twice.
+        if (stateCache[id] === build.status) {
+          continue;
+        }
+        stateCache[id] = build.status;
+
         const prefixed = (msg: string) => {
           return tableFormat(platformDisplayNames[build.platform] ?? build.platform, msg);
         };
@@ -283,7 +291,7 @@ async function waitForBuildEndAsync(
 
     time = new Date().getTime();
     if (testLogging) {
-      await sleep(intervalSec * 100);
+      await sleep(intervalSec * 10);
     } else {
       await sleep(intervalSec * 1000);
     }
@@ -295,5 +303,7 @@ async function waitForBuildEndAsync(
     'Timeout reached! It is taking longer than expected to finish the build, aborting...'
   );
 }
+
+const stateCache: Record<string, BuildStatus> = {};
 
 const timerCache: Record<string, number> = {};

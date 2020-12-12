@@ -80,9 +80,13 @@ class IosSubmitter extends BaseSubmitter<IosSubmissionContext, IosSubmissionOpti
  * @param submissionConfig
  */
 export function printSummaryIOS(submissionConfig: IosSubmissionConfig) {
-  const { appSpecificPassword, ...logConfig } = submissionConfig;
+  const { appSpecificPassword, projectId, archiveUrl, ...logConfig } = submissionConfig;
 
-  printSummary(logConfig, SummaryHumanReadableKeys, SummaryHumanReadableValues);
+  printSummary(
+    { ...logConfig, projectId, archiveUrl },
+    SummaryHumanReadableKeys,
+    SummaryHumanReadableValues
+  );
 }
 
 const SummaryHumanReadableKeys: Record<keyof IosSubmissionConfig, string> = {
