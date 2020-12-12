@@ -28,6 +28,7 @@ export async function buildAsync(commandCtx: CommandContext): Promise<void> {
   }
 
   const scheduledBuilds = await startBuildsAsync(commandCtx);
+  // const scheduledBuilds = Object.values(mockBuilds);
 
   log.newLine();
   printLogsUrls(commandCtx.accountName, scheduledBuilds);
@@ -36,6 +37,7 @@ export async function buildAsync(commandCtx: CommandContext): Promise<void> {
   if (commandCtx.waitForBuildEnd) {
     await waitForBuildEndAsync(
       commandCtx,
+      // Object.keys(mockBuilds)
       scheduledBuilds.map(i => i.buildId)
     );
     // log.newLine();
@@ -85,6 +87,7 @@ async function startBuildsAsync(
 const mockBuilds: Record<string, any> = {
   '5ef5e676-b127-4b9e-bf7b-37827721e039': {
     id: '5ef5e676-b127-4b9e-bf7b-37827721e039',
+    buildId: '5ef5e676-b127-4b9e-bf7b-37827721e039',
     platform: 'android',
     status: BuildStatus.IN_PROGRESS,
     artifacts: {
@@ -94,64 +97,18 @@ const mockBuilds: Record<string, any> = {
   },
   'aff486c1-cb2f-49c4-86dd-649d0f68578a': {
     id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
+    buildId: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
     platform: 'ios',
     status: BuildStatus.FINISHED,
   },
-  // 'bff486c1-cb2f-49c4-86dd-649d0f68578a': {
-  //   id: 'bff486c1-cb2f-49c4-86dd-649d0f68578a',
-  //   platform: 'windows',
-  //   status: BuildStatus.IN_PROGRESS,
-  // },
-  // 'dff486c1-cb2f-49c4-86dd-649d0f68578a': {
-  //   id: 'dff486c1-cb2f-49c4-86dd-649d0f68578a',
-  //   platform: 'web',
-  //   status: BuildStatus.ERRORED,
-  // },
-
-  // '5ef5e676-b127-4b9e-bf7b-37827721e040': '5ef5e676-b127-4b9e-bf7b-37827721e040',
 };
 
+import mocks from './build-requests';
 let i = 0;
 function getMockBuilds(ids: string[]): (Build | string)[] {
+  const mock = mocks[i] as any;
   i++;
-  const results: (Build | string)[] = [];
-  for (const id of ids) {
-    results.push(mockBuilds[id]);
-  }
-
-  if (i > 1) {
-    return [
-      {
-        id: '5ef5e676-b127-4b9e-bf7b-37827721e039',
-        platform: 'android',
-        status: BuildStatus.FINISHED,
-        artifacts: {
-          buildUrl:
-            'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
-        },
-      },
-      {
-        id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
-        platform: 'ios',
-        artifacts: {
-          buildUrl:
-            'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
-        },
-        status: BuildStatus.FINISHED,
-      },
-      // {
-      //   id: 'aff486c1-cb2f-49c4-86dd-649d0f68578a',
-      //   platform: 'web',
-      //   artifacts: {
-      //     buildUrl:
-      //       'https://somn-really-long.io/accounts/expo-turtle/builds/aff486c1-cb2f-49c4-86dd-649d0f68578a',
-      //   },
-      //   status: BuildStatus.IN_QUEUE,
-      // },
-    ] as any;
-  }
-
-  return results;
+  return mock;
 }
 
 function pad(str: string, width: number): string {
@@ -180,7 +137,6 @@ async function waitForBuildEndAsync(
   const unknownName = 'Pending';
 
   while (time <= endTime) {
-    // const builds = getMockBuilds(buildIds);
     const builds: (Build | string)[] = await Promise.all(
       buildIds.map(async buildId => {
         try {
@@ -200,6 +156,18 @@ async function waitForBuildEndAsync(
         return build.platform;
       })
     );
+
+    // Remove any spinners which weren't returned on subsequent requests.
+    const latestBuildIds = builds.map(build => {
+      if (typeof build === 'string') return build;
+      return build.id;
+    });
+
+    for (const id of Object.keys(spinnies.spinners)) {
+      if (!latestBuildIds.includes(id)) {
+        spinnies.remove(id);
+      }
+    }
 
     for (const build of builds) {
       let id = '';
@@ -256,7 +224,7 @@ async function waitForBuildEndAsync(
               if (!(id in timerCache)) {
                 timerCache[id] = endTimer(id);
               }
-              const duration = formatMilliseconds(timerCache[id] ?? 0);
+              const duration = formatMilliseconds(getBuildDuration(build));
               const durationLabel = duration ? ` in ${duration}` : '';
               spinnies.fail(id, { text: prefixed(`(Failed${durationLabel})`) });
             }
@@ -266,7 +234,7 @@ async function waitForBuildEndAsync(
               if (!(id in timerCache)) {
                 timerCache[id] = endTimer(id);
               }
-              const duration = formatMilliseconds(timerCache[id] ?? 0);
+              const duration = formatMilliseconds(getBuildDuration(build));
               const durationLabel = duration ? ` in ${duration}` : '';
               const url = build.artifacts?.buildUrl;
               spinnies.succeed(id, {
@@ -286,6 +254,7 @@ async function waitForBuildEndAsync(
       }).length === builds.length;
 
     if (complete) {
+      clearInterval(spinnies.currentInterval);
       return expectedBuilds;
     }
 
@@ -302,6 +271,18 @@ async function waitForBuildEndAsync(
   throw new Error(
     'Timeout reached! It is taking longer than expected to finish the build, aborting...'
   );
+}
+
+function getBuildDuration(build: Build): number {
+  if (!(build.id in timerCache)) {
+    timerCache[build.id] = endTimer(build.id);
+  }
+
+  if (build.metrics) {
+    return build.metrics.buildEndTimestamp - build.metrics.buildStartTimestamp;
+  } else {
+    return timerCache[build.id] ?? 0;
+  }
 }
 
 const stateCache: Record<string, BuildStatus> = {};
