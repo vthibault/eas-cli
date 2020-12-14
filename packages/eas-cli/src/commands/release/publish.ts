@@ -123,7 +123,7 @@ export default class ReleasePublish extends Command {
     );
 
     log.withTick('Collecting assets...');
-    const assets = collectAssets(inputDir);
+    const assets = collectAssets(inputDir!);
 
     log.withTick('Uploading assets...');
     await uploadAssetsAsync(assets);
