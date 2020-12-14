@@ -1,3 +1,4 @@
+import assert from 'assert';
 import FormData from 'form-data';
 import fs from 'fs';
 import got, { Progress } from 'got';
@@ -21,16 +22,18 @@ export async function uploadAsync(
   uploadType: UploadType,
   path: string,
   handleProgressEvent: ProgressHandler
-): Promise<string> {
+): Promise<{ url: string; bucketKey: string }> {
   const presignedPost = await obtainS3PresignedPostAsync(uploadType, path);
-  return await uploadWithPresignedPostAsync(
+  const url = await uploadWithPresignedPostAsync(
     fs.createReadStream(path),
     presignedPost,
     handleProgressEvent
   );
+  assert(presignedPost.fields.key, 'key is not specified in in presigned post');
+  return { url, bucketKey: presignedPost.fields.key };
 }
 
-interface S3PresignedPost {
+export interface PresignedPost {
   url: string;
   fields: Record<string, string>;
 }
@@ -38,7 +41,7 @@ interface S3PresignedPost {
 async function obtainS3PresignedPostAsync(
   uploadType: UploadType,
   filePath: string
-): Promise<S3PresignedPost> {
+): Promise<PresignedPost> {
   const fileHash = await md5File(filePath);
   const { data } = await apiClient
     .post('upload-sessions', {
@@ -51,9 +54,9 @@ async function obtainS3PresignedPostAsync(
   return data.presignedUrl;
 }
 
-async function uploadWithPresignedPostAsync(
-  stream: Readable,
-  presignedPost: S3PresignedPost,
+export async function uploadWithPresignedPostAsync(
+  stream: Readable | Buffer,
+  presignedPost: PresignedPost,
   handleProgressEvent: ProgressHandler
 ) {
   const form = new FormData();
