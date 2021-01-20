@@ -11,6 +11,17 @@ export async function getProfilesForBundleIdAsync(
   return [];
 }
 
+  await promptAsync({
+    type: 'select',
+    name: 'selected',
+    message: `Did you delete a profile yet? ${profiles.map(profile => profile.id)}`,
+    choices: [
+      {
+        title: 'Yes',
+        value: 'Yes',
+      },
+    ],
+  });
 export async function getBundleIdForIdentifierAsync(
   context: RequestContext,
   bundleIdentifier: string
