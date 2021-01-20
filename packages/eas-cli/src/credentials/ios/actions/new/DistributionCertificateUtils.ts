@@ -12,7 +12,23 @@ import { Account } from '../../../../user/Account';
 import { fromNow } from '../../../../utils/date';
 import { Context } from '../../../context';
 import { AppLookupParams } from '../../api/GraphqlClient';
+import { ProvisioningProfileStoreInfo } from '../../appstore/Credentials.types';
 import { filterRevokedDistributionCerts } from '../../appstore/CredentialsUtilsBeta';
+
+export async function selectProfilesAsync(
+  profiles: ProvisioningProfileStoreInfo[]
+): Promise<ProvisioningProfileStoreInfo | null> {
+  const { chosenProfile } = await promptAsync({
+    type: 'select',
+    name: 'chosenProfile',
+    message: 'Select profile from the list.',
+    choices: profiles.map(profile => ({
+      title: `${profile.provisioningProfileId} ${profile.name}`,
+      value: profile,
+    })),
+  });
+  return chosenProfile;
+}
 
 export function formatDistributionCertificate(
   distributionCertificate: AppleDistributionCertificateFragment,

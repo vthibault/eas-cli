@@ -1,7 +1,7 @@
 import { promptAsync } from '../../prompts';
 import { Action, CredentialsManager } from '../CredentialsManager';
 import { Context } from '../context';
-import { ManageIos } from './ManageIos';
+import { ManageIosBeta } from './ManageIosBeta';
 import { SelectAndroidApp } from './SelectAndroidApp';
 
 export class SelectPlatform implements Action {
@@ -15,7 +15,8 @@ export class SelectPlatform implements Action {
         { value: 'ios', title: 'iOS' },
       ],
     });
-    const action = platform === 'ios' ? new ManageIos() : new SelectAndroidApp();
+    // TODO: DO NOT COMMMIT THIS!
+    const action = platform === 'ios' ? new ManageIosBeta() : new SelectAndroidApp();
     await manager.runActionAsync(action);
   }
 }

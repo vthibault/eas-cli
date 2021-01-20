@@ -113,6 +113,18 @@ async function findProfileByIdAsync(
   return profiles.find(profile => profile.id === profileId) ?? null;
 }
 
+export async function repairProfileAsync(authCtx: AuthCtx, profileId: string, bundleId: string) {
+  const context = getRequestContext(authCtx);
+  const profile = await findProfileByIdAsync(context, profileId, bundleId);
+  if (!profile) {
+    throw new Error('Couldnt find profile of id ' + profileId);
+  }
+  console.log('Regenerating profile ID: ', profileId);
+  const newProfile = await profile.regenerateAsync();
+  console.log('Regenerated Result: ', newProfile);
+  return newProfile;
+}
+
 async function manageAdHocProfilesAsync(
   context: RequestContext,
   {

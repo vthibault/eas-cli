@@ -1,3 +1,5 @@
+import { Profile } from '@expo/apple-utils/build';
+
 import {
   DistributionCertificate,
   DistributionCertificateStoreInfo,
@@ -7,6 +9,7 @@ import {
   PushKeyStoreInfo,
 } from './Credentials.types';
 import { AuthCtx, authenticateAsync } from './authenticate';
+import { getBundleIdForIdentifierAsync } from './bundleId';
 import {
   AppleTooManyCertsError,
   createDistributionCertificateAsync,
@@ -25,7 +28,10 @@ import {
   revokeProvisioningProfileAsync,
   useExistingProvisioningProfileAsync,
 } from './provisioningProfile';
-import { createOrReuseAdhocProvisioningProfileAsync } from './provisioningProfileAdhoc';
+import {
+  createOrReuseAdhocProvisioningProfileAsync,
+  repairProfileAsync,
+} from './provisioningProfileAdhoc';
 import { createPushKeyAsync, listPushKeysAsync, revokePushKeyAsync } from './pushKey';
 
 interface Options {
@@ -150,6 +156,11 @@ class AppStoreApi {
       bundleIdentifier,
       distCertSerialNumber
     );
+  }
+
+  public async repairProfileAsync(profileId: string, bundleIdentifier: string): Promise<Profile> {
+    const ctx = await this.ensureAuthenticatedAsync();
+    return await repairProfileAsync(ctx, profileId, bundleIdentifier);
   }
 }
 export default AppStoreApi;
