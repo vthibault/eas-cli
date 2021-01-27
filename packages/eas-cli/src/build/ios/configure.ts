@@ -35,6 +35,7 @@ export async function validateAndSyncProjectConfigurationAsync(
       'Bundle identifier is not configured correctly in your Xcode project. Please run "eas build:configure" to configure it.'
     );
   }
+  await syncVerionAndBuildNumberWithNativeProjectAsync(projectDir, exp);
   if (isExpoUpdatesInstalled(projectDir)) {
     await syncUpdatesConfigurationAsync(projectDir, exp);
   }

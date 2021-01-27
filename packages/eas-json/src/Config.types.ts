@@ -34,6 +34,7 @@ export interface iOSManagedBuildProfile {
   credentialsSource: CredentialsSource;
   releaseChannel?: string;
   distribution?: DistributionType;
+  autoincrementVersion?: boolean | 'version' | 'buildNumber';
 }
 
 export interface iOSGenericBuildProfile {
@@ -43,6 +44,7 @@ export interface iOSGenericBuildProfile {
   releaseChannel?: string;
   artifactPath?: string;
   distribution?: DistributionType;
+  autoincrementVersion?: boolean | 'version' | 'buildNumber';
 }
 
 export type AndroidBuildProfile = AndroidManagedBuildProfile | AndroidGenericBuildProfile;
