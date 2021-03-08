@@ -1,7 +1,7 @@
 import ApiV2Error from '../ApiV2Error';
 import Log from '../log';
 import { promptAsync } from '../prompts';
-import { Actor, getUserAsync, loginAsync } from './User';
+import { Actor, getActorDisplayName, getUserAsync, loginAsync } from './User';
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
 
 export async function showLoginPromptAsync(): Promise<void> {
@@ -53,22 +53,6 @@ export async function ensureLoggedInAsync(): Promise<Actor> {
   }
 
   return user;
-}
-
-/**
- * Resolve the name of the actor, either normal user or robot user.
- * This should be used whenever the "current user" needs to be displayed.
- * The display name CANNOT be used as project owner.
- */
-export function getActorDisplayName(user?: Actor): string {
-  switch (user?.__typename) {
-    case 'User':
-      return user.username;
-    case 'Robot':
-      return user.firstName ? `${user.firstName} (robot)` : 'robot';
-    default:
-      return 'anonymous';
-  }
 }
 
 export function ensureActorHasUsername(user: Actor): string {
