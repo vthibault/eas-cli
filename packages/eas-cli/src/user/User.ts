@@ -37,8 +37,8 @@ export async function getUserAsync(): Promise<Actor | undefined> {
     if (user) {
       await Analytics.setUserDataAsync(user.id, {
         username: getActorDisplayName(user),
-        userId: user.id,
-        userType: user.__typename,
+        user_id: user.id,
+        user_type: user.__typename,
       });
     }
   }

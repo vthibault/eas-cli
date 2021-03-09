@@ -1,7 +1,7 @@
 import ApiV2Error from '../ApiV2Error';
 import Log from '../log';
 import { promptAsync } from '../prompts';
-import { Actor, getActorDisplayName, getUserAsync, loginAsync } from './User';
+import { Actor, getUserAsync, loginAsync } from './User';
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
 
 export async function showLoginPromptAsync(): Promise<void> {

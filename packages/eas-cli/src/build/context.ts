@@ -2,12 +2,12 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import { AndroidBuildProfile, EasConfig, iOSBuildProfile } from '@expo/eas-json';
 import { v4 as uuidv4 } from 'uuid';
 
-import Analytics, { Event } from './utils/analytics';
-import { findAccountByName } from '../user/Account';
 import { getProjectAccountName } from '../project/projectUtils';
+import { findAccountByName } from '../user/Account';
 import { Actor } from '../user/User';
 import { ensureLoggedInAsync } from '../user/actions';
 import { Platform, RequestedPlatform, TrackingContext } from './types';
+import Analytics, { Event } from './utils/analytics';
 
 export interface CommandContext {
   requestedPlatform: RequestedPlatform;
